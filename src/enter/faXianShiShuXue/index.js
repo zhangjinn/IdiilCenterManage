@@ -4,11 +4,13 @@ import Vue from 'vue'
 import App from './App'
 import router from '../../router/faXianShiShuXue.js'
 import ElementUI from 'element-ui'
+import store from '../../store/index.js';
 import '../../../node_modules/element-ui/lib/theme-chalk/index.css'
 import VueQuillEditor from 'vue-quill-editor'
+import '../../assets/font/iconfont.css'
 
 Vue.prototype.fromFlag = false;//本地或者数据库标志,//true为真实数据，false为本地数据
-Vue.config.debug = true
+Vue.config.debug = true;
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(VueQuillEditor);
@@ -30,6 +32,7 @@ router.beforeEach((to, from, next) => {
 new Vue({
   el: '#app',
   router:router,
+  store,
   components: { App },
   template: '<App/>'
-})
+});

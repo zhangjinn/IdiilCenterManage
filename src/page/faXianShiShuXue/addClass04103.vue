@@ -1,6 +1,5 @@
 <template>
   <div class="addClass">
-
     <section class="data_section">
 
       <el-dialog
@@ -11,83 +10,135 @@
         组名：<el-input v-model="addNewGroupName" style="width: 30%"></el-input>
         <el-button type="primary" @click="addGroupNameHandle()">确定</el-button>
       </el-dialog>
-      <el-form   :model="sourceLists" :label-width="formLabelWidth">
+      <el-form :model="form">
         <el-row>
           <el-col :span="24">
             <el-card class="box-card">
               <div class="rowBox cardTop">
-                <el-form-item label="课程名称:">
-                  <span v-if="editClassFlag">
-                    <el-input v-model="sourceLists.classList.name" ></el-input>
-                  </span>
-                  <span v-else>{{sourceLists.classList.name}}</span>
+
+                <el-form-item label="课程名称:" :label-width="formLabelWidth">
+                  <span class="editInfo editClassName">课程</span>
                 </el-form-item>
-                <el-form-item label="课程目标:">
-                  <span v-if="editClassFlag">
-                    <el-input type="textarea" v-model="sourceLists.classList.target"></el-input>
-                  </span>
-                  <span v-else>{{sourceLists.classList.target}}</span>
+                <el-form-item label="课程目标:" :label-width="formLabelWidth">
+                  <span class="editInfo editClassName">帮助学习英语</span>
                 </el-form-item>
-                <el-form-item label="课程时长:">
-                  <span v-if="editClassFlag">
-                    <el-input v-model="sourceLists.classList.duration"></el-input>
-                  </span>
-                  <span v-else>{{sourceLists.classList.duration}}</span>
+                <el-form-item label="课程时长:" :label-width="formLabelWidth">
+                  <span class="editInfo editClassName">100分钟</span>
                 </el-form-item>
-                <el-form-item label="对应版本:">
-                  <span v-if="editClassFlag">
-                    <el-input v-model="sourceLists.classList.version"></el-input>
-                  </span>
-                  <span v-else>{{sourceLists.classList.version}}</span>
-                </el-form-item>
-                <el-form-item>
-                  <div class="button-group">
+                <div class="button-group">
                     <span>
                         <el-button size="mini" @click="addCustomBlock">添加自定义区块</el-button>
                         <el-button size="mini" @click="DialogIdiilVisible = true;">添加IDIIL区块</el-button>
                     </span>
                     <span>
-                        <el-button size="mini" @click="editClass">编辑</el-button>
-                        <el-button size="mini" @click="saveClass">保存</el-button>
+                        <el-button size="mini">编辑</el-button>
+                        <el-button size="mini">保存</el-button>
                     </span>
-                  </div>
-                </el-form-item>
+                </div>
               </div>
             </el-card>
           </el-col>
         </el-row>
         <el-row>
           <el-col>
-            <!--<el-collapse>-->
-              <draggable
-                tag="el-collapse"
-                :list="sourceLists.blockLists"
-              >
-                <div v-for="(blockList,index) in sourceLists.blockLists" :key="blockList.key" class="collapseItem">
-                  <el-collapse-item v-if="blockList.type == 'custom'" >
-                    <template slot="title">
-                      自定义区块课程{{blockList.key}}
-                      <!--<i class="el-icon-xiayi moveUp" @click.stop="moveUp($event)"></i>-->
-                      <!--<i class="el-icon-xiayi1 moveDown" @click.stop="moveDown($event)"></i>-->
-                    </template>
-                    <custom-list :blockLists="sourceLists.blockLists" :blockList="blockList"></custom-list>
+            <el-collapse>
+              <div>
+                <el-collapse-item>
+                  <template slot="title">
+                    IDIIL线上英语课程
+                  </template>
+                  <el-card>
+                    <div class="rowBox cardBody">
+                      <el-form-item label="区块名称:" :label-width="formLabelWidth">
+                        <span class="editInfo editClassName">区块0</span>
+                      </el-form-item>
+                      <el-form-item label="教学目标:" :label-width="formLabelWidth">
+                        <span class="editInfo editClassName">学英语</span>
+                      </el-form-item>
+                      <el-form-item label="课程时长:" :label-width="formLabelWidth">
+                        <span class="editInfo editClassName">100分钟</span>
+                      </el-form-item>
+                      <el-form-item label="课程内容:" :label-width="formLabelWidth">
+                        <div class="fileContainer">
+                            <span class="fileItem">
 
-                  </el-collapse-item>
-                  <el-collapse-item v-else>
-                    <template slot="title">
-                      IDIIL线上英语课程{{blockList.key}}
-                    </template>
-                    <default-list :blockLists="sourceLists.blockLists" :blockList="blockList"></default-list>
-                  </el-collapse-item>
-                </div>
-              </draggable>
-            <!--</el-collapse>-->
+                            </span>
+                        </div>
+                      </el-form-item>
+                    </div>
+                  </el-card>
+                </el-collapse-item>
+              </div>
+              <div v-for="(item,index) in sourceList" :key="index">
+                <el-collapse-item v-if="item.type == 'custom'" >
+                  <template slot="title">
+                    自定义区块课程
+                    <i class="header-icon el-icon-sort-up moveUp" @click.stop="moveUp($event)"></i>
+                    <i class="header-icon el-icon-sort-down moveDown" @click.stop="moveDown($event)"></i>
+                  </template>
+                  <el-card>
+                    <div class="rowBox cardBody">
+                      <el-form-item label="区块名称:" :label-width="formLabelWidth">
+                        <el-input v-model="form.name"></el-input>
+                      </el-form-item>
+                      <el-form-item label="教学目标:" :label-width="formLabelWidth">
+                        <el-input v-model="form.target"></el-input>
+                      </el-form-item>
+                      <el-upload ref="upload"
+                                 :file-list="fileList"
+                                 action="/api/file/upload"
+                                 :on-remove="handleFileRemove"
+                                 :auto-upload="false"
+                                 :on-change="changeFileHandle"
+                                 :on-success="uploadSuccess"
+                                 :on-error="uploadError"
+                                 :data="uploadParam"
+                                 :before-upload="beforeUpload"
+                                 :limit=5
+                                 multiple>
+                        <el-button slot="trigger" size="mini" type="primary">选择文件</el-button>
+                        <el-button size="mini" type="success" @click="submitUpload">上传</el-button>
+                      </el-upload>
+                    </div>
+                  </el-card>
+                </el-collapse-item>
+
+                <el-collapse-item v-else >
+                  <template slot="title">
+                    IDIIL线上英语课程
+                  </template>
+                  <el-card>
+                    <div class="rowBox cardBody">
+                      <el-form-item label="区块名称:" :label-width="formLabelWidth">
+                        <span class="editInfo editClassName">区块0</span>
+                      </el-form-item>
+                      <el-form-item label="教学目标:" :label-width="formLabelWidth">
+                        <span class="editInfo editClassName">学英语</span>
+                      </el-form-item>
+                      <el-form-item label="课程时长:" :label-width="formLabelWidth">
+                        <span class="editInfo editClassName">100分钟</span>
+                      </el-form-item>
+                      <el-form-item label="课程内容:" :label-width="formLabelWidth">
+                        <div class="fileContainer">
+                        <span class="fileItem">
+                          <span>{{(index+1) + '、'+item.name}}</span>
+                          <i style="margin-left: 5px;cursor: pointer" class="el-icon-close" @click="deleteResource(index)"></i>
+                        </span>
+                        </div>
+                      </el-form-item>
+                    </div>
+                  </el-card>
+                </el-collapse-item>
+              </div>
+
+
+            </el-collapse>
           </el-col>
         </el-row>
       </el-form>
 
       <div style="margin-top: 50px;">
-        <el-button type="primary" @click="submitAllData">提 交{{count}}</el-button>
+        <el-button type="primary" @click="submitAllData">提 交</el-button>
       </div>
     </section>
     <el-dialog
@@ -103,7 +154,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { mapState,mapMutations } from 'vuex'
   import headTop from '../../components/headTop.vue'
   import selectClass from '../../components/selectClassDom.vue'
   import classData from '../../data/classlist'
@@ -112,10 +162,6 @@
   import {uploadFile} from '../../api/upload'
   import {addClassListInfo,updateClassListInfo} from '../../api/classes'
   import {getAllClassesOfCenter} from '../../api/manage'
-  import customList from '../../components/customList.vue'
-  import defaultList from '../../components/defaultList.vue'
-  import draggable from 'vuedraggable'
-
   export default {
     props:['data','type','addFlag'],
     data(){
@@ -129,32 +175,31 @@
         DialogIdiilVisible:false,
         formLabelWidth: '90px',
         addNewGroupName:'',
+        form: JSON.parse(classData1).classList,
         classOptions:[],
-        editClassFlag:false,
-        sourceLists:{}
-
+        sourceList:[],//idiil课件list
+        customLists:[], //自定义课件列表
+        allLists:[], //自定义课件列表
+        nextCustomListId: 1,
+        nextCustomListText: '',
+        fileList:[],
+        uploadParam:{
+          username:JSON.parse(getStore('userInfo')).userName
+        }
       }
     },
-    created(){
-      //在页面加载时读取localStorage里的状态信息
-      const object2 = Object.assign({}, this.sourceListsInfo);
-      console.log(object2);
-      const object=JSON.parse(JSON.stringify(this.sourceListsInfo));
-      this.sourceLists=JSON.parse(getStore("sourceLists")) || object;
-      console.log('1111111111111111'+this.sourceLists)
-    },
     computed: {
-      ...mapState(['sourceListsInfo','count']),
       sourceData() {
         let changeValue = this.form.studentGroup.nowList;
         return this.studentData.filter(item => changeValue.indexOf(item.key) === -1);
-      }
+      },
     },
     watch:{
       //当监听的属性值变化的时候 会执行对应的处理逻辑
       addFlag:function(newValue,oldValue){
-        console.error("watch 监听数据-----》",newValue,oldValue);
-
+        console.error("watch 监听数据-----》",newValue,oldValue)
+//        let classData1 = JSON.stringify(classData);
+//        this.form = JSON.parse(classData1).classList
       },
       $route:function(to,from){
         console.error("watch 监听数据--$route--11-》",to,from)
@@ -166,27 +211,21 @@
         console.error("watch 监听数据--beforeRouteUpdate--33-》",to,from)
       }
     },
-
     components:{
       headTop,
-      draggable,
-      selectClass,
-      customList,
-      defaultList
+      selectClass
     },
     mounted(){
-
       const Wh = $(window).height();
       console.log('222222222222--->',this.data,this.type);
       this.getclassesList();
       this.setItemDisabled();
-
       fetch('static/ClassUserList.json').then((response)=>{
         return response.json();
       }).then((res)=>{
         if(this.type == 'update'){
           this.form.studentGroup = toJson(this.data.group_student_Info);
-          this.sourceLists.blockLists = toJson(this.data.source);//之前的idiil课件list
+          this.sourceList = toJson(this.data.source);//之前的idiil课件list
           this.fileList = toJson(this.data.otherSource);//之前的上传文件
           this.form.otherSource = toJson(this.data.otherSource);//之前的上传文件
           this.form.source = toJson(this.data.source);//之前的上传文件
@@ -205,10 +244,6 @@
       })
     },
     methods: {
-      ...mapMutations([
-        'ADD_COUNT',
-        'SOURCE_LIST'// 将 `this.classList()` 映射为 `this.$store.commit('increment')`//将 `this.blockList(amount)` 映射为 `this.$store.commit('incrementBy', amount)`
-      ]),
       async getclassesList(){
         let result1 = await getAllClassesOfCenter({centerId:'002'});
         console.log("班级列表--------------------->",result1)
@@ -286,11 +321,17 @@
         })
         console.log("添加的新租、",this.addNewGroupName)
       },
-
+      submitUpload() {
+        const data = new FormData();
+        data.append("files", this.$refs.upload.uploadFiles);
+        data.append("username", JSON.parse(getStore('userInfo')).userName);
+        console.log("upload--->",this.$refs.upload)
+        this.$refs.upload.submit(); //上传文件 "/api/file/upload"
+      },
       //全部提交按钮事件
       async submitAllData(){
         let userInfo = JSON.parse(getStore('userInfo'));
-        this.form.source = this.sourceLists.blockLists;
+        this.form.source = this.sourceList;
         this.form.datetime = getNowFormatDate.YY_MM_DD();
         this.form.teacherId = userInfo.userId;
         this.form.teacherName = userInfo.userName;
@@ -313,12 +354,45 @@
           this.$message({message: '没有操作类型,什么都没有做^—^！',type:'warning'});
         }
       },
-
+      //删除选择的上传文件
+      handleFileRemove(file){
+        let filterNowList = this.fileList;
+        for(let ii in filterNowList){
+          if(filterNowList[ii].uid == file.uid){
+            filterNowList.splice(ii,1)
+            break;
+          }
+        }
+        console.log("删除的文件：：：：",file, this.fileList);
+      },
+      //添加外部文件时的处理函数
+      changeFileHandle(file){
+        console.log("改变文件：：：：",file, this.fileList);
+      },
+      beforeUpload(file){
+        //在这里可以做文件上传之前的操作
+        console.log("文件上传之前：：：：",file);
+      },
+      //文件上传成功
+      uploadSuccess(response, file, fileList){
+        console.log("上传成功：：：：",response,file,fileList);
+        this.form.otherSource = fileList;
+        this.$message({message: '上传成功！',type:'success'});
+      },
+      //文件上传失败处理
+      uploadError(err, file, fileList){
+        console.log("上传失败：：：：",err,file,fileList);
+        this.$message({message: '上传成功！',type:'error'});
+      },
+      //删除IDIIL课程列表中的某项
+      deleteResource(index){
+        this.sourceList.splice(index,1)
+      },
       //选择完课程之后的处理逻辑
       selectClassHandle(param){
         let ClassUserInfo = JSON.parse(getStore("ClassUserList"));
         let UserInfo = JSON.parse(getStore("userInfo"));
-        console.log("选择的链接---》",ClassUserInfo,ClassUserInfo.CenterID);
+        console.log("选择的链接---》",ClassUserInfo,ClassUserInfo.CenterID)
         let objParam={
           sChapterID:param.CID,
           sUnitID:param.UID,
@@ -333,17 +407,16 @@
           InstructorID : UserInfo.InstructorID,
           OutputType:param.selectType,
           GlobalID:param.GlobalID
-        };
+        }
+        let urlEnd = filterWebUrl(objParam);
         let urlJson= {
           name:param.selectUnitName,
-          target:"2222",
-          duration:'100分钟',
+//          url:urlEnd,
           params:objParam,
           type:"class",
-          uid: new Date().getTime(),
-          key: Date.now()
-        };
-        this.sourceLists.blockLists.push(urlJson);
+          uid: new Date().getTime()
+        }
+        this.sourceList.push(urlJson)
         this.$message({'type':'success',message:"添加成功！"})
       },
       //获取选中的学生的信息
@@ -360,33 +433,23 @@
       },
       //添加区块
       addCustomBlock(param){
+        console.log(param);
         let urlJson= {
-          name:"",
-          target:"",
-          duration:'50分钟',
+          name:this.nextCustomListText,
+//          id:this.nextCustomListId++,
           type:"custom",
           params:"custom",
-          uid: new Date().getTime(),
-          key: Date.now()
+          uid: new Date().getTime()
         };
-        this.sourceLists.blockLists.push(urlJson);
+        this.sourceList.push(urlJson);
+//        this.customLists.push(urlJson);
+//        this.nextCustomListText=''
         this.$nextTick(function(){this.setItemDisabled()})
       },
       alertFn(num){
         alert(num)
 
       },
-      editClass(){
-        this.editClassFlag=true;
-      },
-      saveClass(){
-        this.editClassFlag=false;
-        console.log(this.sourceLists);
-        this.SOURCE_LIST(this.sourceLists);
-        this.ADD_COUNT();
-      },
-
-
       //设置上移下移按钮的状态
       setItemDisabled(){
         $("i.moveUp,i.moveDown").show();
@@ -417,7 +480,6 @@
 
   i{
     font-size: 16px;
-    padding-left: 15px;
   }
   .addClass{
   .data_section {
@@ -426,9 +488,6 @@
     text-align: left;
   .el-row{
     margin-bottom: 25px;
-  }
-  .collapseItem{
-    border-bottom: 1px solid #ebeef5;
   }
   .cardTop,.cardBody {
 
